@@ -1,9 +1,18 @@
 package xyz.eneroth.memo;
 
 public class MemoRecord {
+    public String id;
     public String userId;
     public String memo;
     public String timestamp;
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
 
     public String getUserId() {
         return userId;
