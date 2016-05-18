@@ -19,8 +19,8 @@ import java.util.List;
 @RequestMapping(value = "/memo")
 public class MemoController {
 
-    private String tableName = "memo_table";
-    private String sequenceName = "id_seq";
+    private static String TABLE_NAME = "memo_table";
+    private static String SEQUENCE_NAME = "id_seq";
 
     @RequestMapping("/")
     public String index() {
@@ -38,16 +38,16 @@ public class MemoController {
             connection = DatabaseUrl.extract().getConnection();
             Statement stmt = connection.createStatement();
             try {
-                stmt.executeUpdate("DROP TABLE " + tableName);
+                stmt.executeUpdate("DROP TABLE " + TABLE_NAME);
                 System.out.println("Table dropped");
-                stmt.executeUpdate("DROP SEQUENCE " + sequenceName);
+                stmt.executeUpdate("DROP SEQUENCE " + SEQUENCE_NAME);
                 System.out.println("Sequence dropped");
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            stmt.executeUpdate("CREATE TABLE " + tableName + " (id text, username text, memo text, tick timestamp)");
+            stmt.executeUpdate("CREATE TABLE " + TABLE_NAME + " (id text, username text, memo text, tick timestamp)");
             System.out.println("Table created");
-            stmt.executeUpdate("CREATE SEQUENCE " + sequenceName + " START 100");
+            stmt.executeUpdate("CREATE SEQUENCE " + SEQUENCE_NAME + " START 100");
             System.out.println("Sequence created");
         } catch (Exception e) {
             e.printStackTrace();
@@ -63,20 +63,16 @@ public class MemoController {
     }
 
     @CrossOrigin
-    @RequestMapping(method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, value = "/add")
+    @RequestMapping(method = RequestMethod.POST, value = "/add")
     public void addMemo(@RequestParam(value="memo", defaultValue="EMPTY") String memo,
                         @RequestParam(value="userId", defaultValue="EMPTY") String userId) {
         Connection connection = null;
-        MemoResponse res = new MemoResponse();
         try {
             connection = DatabaseUrl.extract().getConnection();
             Statement stmt = connection.createStatement();
-            stmt.executeUpdate("INSERT INTO " + tableName + " VALUES (nextval('" + sequenceName + "'), '" + userId + "', '" + memo + "', now())");
+            stmt.executeUpdate("INSERT INTO " + TABLE_NAME + " VALUES (nextval('" + SEQUENCE_NAME + "'), '" + userId + "', '" + memo + "', now())");
         } catch (Exception e) {
             e.printStackTrace();
-            List list = res.getMemos();
-            list.add("ERROR");
-            res.setMemos(list);
         } finally {
             if (connection != null) try {
                 connection.close();
@@ -87,18 +83,15 @@ public class MemoController {
     }
 
     @CrossOrigin
-    @RequestMapping(method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_VALUE, value = "/delete")
+    @RequestMapping(method = RequestMethod.DELETE, value = "/delete")
     public @ResponseBody void deleteMemo(@RequestParam(value="id") String id) {
         Connection connection = null;
-        MemoResponse res = new MemoResponse();
         try {
             connection = DatabaseUrl.extract().getConnection();
             Statement stmt = connection.createStatement();
-            stmt.executeUpdate("DELETE FROM " + tableName + " WHERE id = '" + id + "'");
+            stmt.executeUpdate("DELETE FROM " + TABLE_NAME + " WHERE id = '" + id + "'");
         } catch (Exception e) {
-            List list = res.getMemos();
-            list.add("ERROR:" + e.getMessage() + e.getStackTrace());
-            res.setMemos(list);
+            e.printStackTrace();
         } finally {
             if (connection != null) try {
                 connection.close();
@@ -118,9 +111,9 @@ public class MemoController {
             Statement stmt = connection.createStatement();
             ResultSet rs;
             if (userId.equalsIgnoreCase("EMPTY")) {
-                rs = stmt.executeQuery("SELECT * FROM " + tableName + " order by tick DESC");
+                rs = stmt.executeQuery("SELECT * FROM " + TABLE_NAME + " order by tick DESC");
             } else {
-                rs = stmt.executeQuery("SELECT * FROM " + tableName + " WHERE username = '" + userId + "' order by tick DESC");
+                rs = stmt.executeQuery("SELECT * FROM " + TABLE_NAME + " WHERE username = '" + userId + "' order by tick DESC");
             }
             while (rs.next()) {
                 MemoRecord record = new MemoRecord();
