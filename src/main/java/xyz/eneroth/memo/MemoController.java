@@ -19,8 +19,8 @@ import java.util.List;
 @RequestMapping(value = "/memo")
 public class MemoController {
 
-    private static String TABLE_NAME = "memo_table";
-    private static String SEQUENCE_NAME = "id_seq";
+    private static final String TABLE_NAME = "memo_table";
+    private static final String SEQUENCE_NAME = "id_seq";
 
     @RequestMapping("/")
     public String index() {
