@@ -29,7 +29,10 @@ public class MemoController {
 
     @CrossOrigin
     @RequestMapping(method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, value = "/__dbinit__")
-    public void dbInit() {
+    public String dbInit(@RequestParam(value="key") String key) {
+        if (!key.equalsIgnoreCase(System.getenv("ADMIN_KEY"))) {
+            return "Fel key!";
+        }
         Connection connection = null;
         try {
             connection = DatabaseUrl.extract().getConnection();
@@ -55,6 +58,8 @@ public class MemoController {
                 e.printStackTrace();
             }
         }
+
+        return "OK";
     }
 
     @CrossOrigin
