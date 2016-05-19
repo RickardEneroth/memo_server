@@ -64,7 +64,7 @@ public class MemoController {
 
     @CrossOrigin
     @RequestMapping(method = RequestMethod.POST, value = "/add")
-    public void addMemo(@RequestParam(value="memo", defaultValue="EMPTY") String memo,
+    public String addMemo(@RequestParam(value="memo", defaultValue="EMPTY") String memo,
                         @RequestParam(value="userId", defaultValue="EMPTY") String userId) {
         Connection connection = null;
         try {
@@ -80,11 +80,13 @@ public class MemoController {
                 e.printStackTrace();
             }
         }
+
+        return "{}";
     }
 
     @CrossOrigin
     @RequestMapping(method = RequestMethod.DELETE, value = "/delete")
-    public @ResponseBody void deleteMemo(@RequestParam(value="id") String id) {
+    public @ResponseBody String deleteMemo(@RequestParam(value="id") String id) {
         Connection connection = null;
         try {
             connection = DatabaseUrl.extract().getConnection();
@@ -99,6 +101,8 @@ public class MemoController {
                 e.printStackTrace();
             }
         }
+
+        return "{}";
     }
 
     @CrossOrigin
